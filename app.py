@@ -14,6 +14,15 @@ def home():
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
+        # Collect user input from the form
+        total_classes_attended = float(request.form['total_classes_attended'])
+        current_month_classes = float(request.form['current_month_classes'])
+        lifetime_months = float(request.form['Lifetime'])  
+
+        # Automatically compute averages
+        avg_class_frequency_total = total_classes_attended / lifetime_months
+        avg_class_frequency_current_month = current_month_classes / 4  
+
         data = {
             'gender': request.form['gender'],
             'Near_Location': float(request.form['Near_Location']),
@@ -25,9 +34,9 @@ def predict():
             'Age': float(request.form['Age']),
             'Avg_additional_charges_total': float(request.form['Avg_additional_charges_total']),
             'Month_to_end_contract': float(request.form['Month_to_end_contract']),
-            'Lifetime': float(request.form['Lifetime']),
-            'Avg_class_frequency_total': float(request.form['Avg_class_frequency_total']),
-            'Avg_class_frequency_current_month': float(request.form['Avg_class_frequency_current_month'])
+            'Lifetime': lifetime_months,
+            'Avg_class_frequency_total': avg_class_frequency_total,
+            'Avg_class_frequency_current_month': avg_class_frequency_current_month
         }
 
         # Encode gender
@@ -36,6 +45,7 @@ def predict():
             'gender': 1 if data['gender'] == 'Female' else 0
         }])
 
+        # Model prediction
         prediction = model.predict(sample)[0]
 
         confidence = None
@@ -46,7 +56,6 @@ def predict():
         if confidence is not None:
             result_text += f" — Confidence: {confidence}%"
 
-        # Pass the original form data back to the template
         return render_template('index.html', prediction_text=result_text, form_data=data)
 
     except Exception as e:

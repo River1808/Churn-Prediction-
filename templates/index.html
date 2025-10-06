@@ -69,15 +69,15 @@
       <input type="number" name="Lifetime" step="0.1" required>
       <small>Time since first joined the gym</small>
 
-      <!-- Avg Class Frequency Total -->
-      <label>Avg Class Frequency Total:</label>
-      <input type="number" name="Avg_class_frequency_total" step="0.1" required>
-      <small>Average classes attended per month (all time)</small>
+      <!-- Total Classes Attended -->
+      <label>Total Classes Attended (all time):</label>
+      <input type="number" name="total_classes_attended" step="1" required>
+      <small>Total number of classes you’ve attended since joining</small>
 
-      <!-- Avg Class Frequency Current Month -->
-      <label>Avg Class Frequency Current Month:</label>
-      <input type="number" name="Avg_class_frequency_current_month" step="0.1" required>
-      <small>Average classes attended this month</small>
+      <!-- Classes Attended This Month -->
+      <label>Classes Attended This Month:</label>
+      <input type="number" name="current_month_classes" step="1" required>
+      <small>Number of classes attended in the current month</small>
 
       <button type="submit">Predict</button>
     </form>
