@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gym Membership Prediction</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>🏋️‍♀️ Gym Membership Prediction</h1>
+
+    <form action="/predict" method="post">
+      <!-- Gender -->
+      <label>Gender:</label>
+      <select name="gender" required>
+        <option value="Female">Female</option>
+        <option value="Male">Male</option>
+      </select>
+      <small>Select your gender</small>
+
+      <!-- Near Location -->
+      <label>Near Location:</label>
+      <input type="number" name="Near_Location" min="0" max="1" required>
+      <small>1 = Yes (lives/works near gym), 0 = No</small>
+
+      <!-- Partner -->
+      <label>Partner:</label>
+      <input type="number" name="Partner" min="0" max="1" required>
+      <small>1 = Yes (associated company), 0 = No</small>
+
+      <!-- Promo Friends -->
+      <label>Promo Friends:</label>
+      <input type="number" name="Promo_friends" min="0" max="1" required>
+      <small>1 = Yes (used friend's promo), 0 = No</small>
+
+      <!-- Phone -->
+      <label>Phone:</label>
+      <input type="number" name="Phone" min="0" max="1" required>
+      <small>1 = Provided, 0 = Not provided</small>
+
+      <!-- Contract Period -->
+      <label>Contract Period (months):</label>
+      <input type="number" name="Contract_period" step="0.1" required>
+      <small>Number of months for current contract</small>
+
+      <!-- Group Visits -->
+      <label>Group Visits:</label>
+      <input type="number" name="Group_visits" min="0" max="1" required>
+      <small>1 = Yes, 0 = No</small>
+
+      <!-- Age -->
+      <label>Age:</label>
+      <input type="number" name="Age" step="0.1" required>
+      <small>Your age in years</small>
+
+      <!-- Avg Additional Charges Total -->
+      <label>Avg Additional Charges Total:</label>
+      <input type="number" name="Avg_additional_charges_total" step="0.1" required>
+      <small>Average extra charges per month</small>
+
+      <!-- Months to End Contract -->
+      <label>Months to End Contract:</label>
+      <input type="number" name="Month_to_end_contract" step="0.1" required>
+      <small>Number of months until contract ends</small>
+
+      <!-- Lifetime -->
+      <label>Lifetime (months):</label>
+      <input type="number" name="Lifetime" step="0.1" required>
+      <small>Time since first joined the gym</small>
+
+      <!-- Avg Class Frequency Total -->
+      <label>Avg Class Frequency Total:</label>
+      <input type="number" name="Avg_class_frequency_total" step="0.1" required>
+      <small>Average classes attended per month (all time)</small>
+
+      <!-- Avg Class Frequency Current Month -->
+      <label>Avg Class Frequency Current Month:</label>
+      <input type="number" name="Avg_class_frequency_current_month" step="0.1" required>
+      <small>Average classes attended this month</small>
+
+      <button type="submit">Predict</button>
+    </form>
+
+    {% if prediction_text %}
+      <div class="result">{{ prediction_text }}</div>
+    {% endif %}
+  </div>
+</body>
+</html>
