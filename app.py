@@ -20,7 +20,7 @@ def predict():
         lifetime_months = float(request.form['Lifetime'])  
 
         # Automatically compute averages
-        avg_class_frequency_total = total_classes_attended / lifetime_months
+        avg_class_frequency_total = total_classes_attended / (lifetime_months*4)
         avg_class_frequency_current_month = current_month_classes / 4  
 
         data = {
