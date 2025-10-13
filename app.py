@@ -3,7 +3,7 @@ import pandas as pd
 import joblib
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-
+import json
 app = Flask(__name__)
 
 # Load your trained model
@@ -12,8 +12,10 @@ model = joblib.load("best_gym_churn_model.pkl")
 # -------------------------------
 # Google Sheets connection setup
 # -------------------------------
-SHEET_ID = "1UvZSukYBxQJCPb_CCMIXHPhaLv3EuGtcl2CVPOgWgdo"
-CREDENTIALS_FILE = "credentials.json"
+
+creds_json = json.loads(os.getenv('GOOGLE_CREDENTIALS'))
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_json, scope)
+
 
 # Define the scope (permissions)
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
