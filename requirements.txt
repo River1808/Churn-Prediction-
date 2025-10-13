@@ -3,3 +3,8 @@ gunicorn
 scikit-learn
 pandas
 numpy
+pandas
+joblib
+gspread
+oauth2client
+
