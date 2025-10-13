@@ -1,27 +1,49 @@
 from flask import Flask, render_template, request
 import pandas as pd
 import joblib
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
 app = Flask(__name__)
 
 # Load your trained model
 model = joblib.load("best_gym_churn_model.pkl")
 
+# -------------------------------
+# Google Sheets connection setup
+# -------------------------------
+SHEET_ID = "1UvZSukYBxQJCPb_CCMIXHPhaLv3EuGtcl2CVPOgWgdo"
+CREDENTIALS_FILE = "credentials.json"
+
+# Define the scope (permissions)
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+
+# Authorize access
+creds = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE, scope)
+client = gspread.authorize(creds)
+
+# Open the first worksheet
+sheet = client.open_by_key(SHEET_ID).sheet1
+
+
 @app.route('/')
 def home():
     return render_template('index.html')
 
+
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        # Collect user input from the form
+        # --------------------------
+        # Collect user input
+        # --------------------------
         total_classes_attended = float(request.form['total_classes_attended'])
         current_month_classes = float(request.form['current_month_classes'])
-        lifetime_months = float(request.form['Lifetime'])  
+        lifetime_months = float(request.form['Lifetime'])
 
-        # Automatically compute averages
-        avg_class_frequency_total = total_classes_attended / (lifetime_months*4)
-        avg_class_frequency_current_month = current_month_classes / 4  
+        # Compute averages
+        avg_class_frequency_total = total_classes_attended / (lifetime_months * 4)
+        avg_class_frequency_current_month = current_month_classes / 4
 
         data = {
             'gender': request.form['gender'],
@@ -39,13 +61,14 @@ def predict():
             'Avg_class_frequency_current_month': avg_class_frequency_current_month
         }
 
-        # Encode gender
+        # --------------------------
+        # Prepare for prediction
+        # --------------------------
         sample = pd.DataFrame([{
             **data,
             'gender': 1 if data['gender'] == 'Female' else 0
         }])
 
-        # Model prediction
         prediction = model.predict(sample)[0]
 
         confidence = None
@@ -56,10 +79,35 @@ def predict():
         if confidence is not None:
             result_text += f" — Confidence: {confidence}%"
 
+        # --------------------------
+        # Save data to Google Sheet
+        # --------------------------
+        sheet.append_row([
+            data['gender'],
+            data['Near_Location'],
+            data['Partner'],
+            data['Promo_friends'],
+            data['Phone'],
+            data['Contract_period'],
+            data['Group_visits'],
+            data['Age'],
+            data['Avg_additional_charges_total'],
+            data['Month_to_end_contract'],
+            data['Lifetime'],
+            data['Avg_class_frequency_total'],
+            data['Avg_class_frequency_current_month'],
+            'Yes' if prediction == 0 else 'No',
+            confidence if confidence is not None else ''
+        ])
+
+        # --------------------------
+        # Display result on page
+        # --------------------------
         return render_template('index.html', prediction_text=result_text, form_data=data)
 
     except Exception as e:
         return render_template('index.html', prediction_text=f"⚠️ Error: {e}", form_data=request.form)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
