@@ -4,6 +4,7 @@ import joblib
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import json
+import os
 app = Flask(__name__)
 
 # Load your trained model
